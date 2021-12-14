@@ -23,3 +23,7 @@ compileJava {
 application {
   mainClass = 'hexlet.code.App'
 }
+
+dependencies {
+  implementation 'info.picocli:picocli:4.6.2'
+}
