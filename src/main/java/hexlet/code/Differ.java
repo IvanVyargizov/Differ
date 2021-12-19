@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-public class Differ{
+public class Differ {
 
     public static String generate(String path1, String path2) throws IOException {
         HashMap<String, String> file1 = read(path1);
@@ -33,7 +33,9 @@ public class Differ{
                     } else if (!value.equals(file1.get(key))) {
                         diff.add("  - " + key + ": " + file1.get(key));
                         diff.add("  + " + key + ": " + value);
-                    } else diff.add("    " + key + ": " + value);
+                    } else {
+                        diff.add("    " + key + ": " + value);
+                    }
                 }
         );
         return "{\n" + String.join("\n", diff) + "\n}";
@@ -44,10 +46,10 @@ public class Differ{
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(new File(absolutePath));
         String fileContent = jsonNode.toString();
-        return objectMapper.readValue(fileContent, new TypeReference<>(){});
+        return objectMapper.readValue(fileContent, new TypeReference<>() { });
     }
 
-    private static String castAbsolutePath (String path) throws IOException {
+    private static String castAbsolutePath(String path) throws IOException {
         Path checking = Paths.get(path);
         if (checking.isAbsolute()) {
             return path;
