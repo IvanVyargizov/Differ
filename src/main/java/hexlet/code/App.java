@@ -23,14 +23,13 @@ public class App implements Callable<Integer> {
     private String filepath2;
 
     @Override
-    public final Integer call() throws Exception {
+    public final Integer call() {
         System.out.println(Differ.generate(filepath1, filepath2));
         return 0;
     }
 
     public static void main(String[] args) {
-        int exitCode = new CommandLine(new App()).execute(args);
-        System.exit(exitCode);
+        new CommandLine(new App()).execute(args);
     }
 
 }

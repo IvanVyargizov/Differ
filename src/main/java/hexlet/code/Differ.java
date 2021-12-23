@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,9 +15,21 @@ import java.util.stream.Collectors;
 
 public class Differ {
 
-    public static String generate(String path1, String path2) throws IOException {
-        HashMap<String, String> file1 = read(path1);
-        HashMap<String, String> file2 = read(path2);
+    public static String generate(String path1, String path2) {
+        HashMap<String, String> file1;
+        try {
+            file1 = read(path1);
+        } catch (IOException ioe) {
+            return "Incorrect path to first file. Exception: " + ioe;
+        }
+
+        HashMap<String, String> file2;
+        try {
+            file2 = read(path2);
+        } catch (IOException ioe) {
+            return "Incorrect path to second file. Exception: " + ioe;
+        }
+
         TreeMap<String, String> mergingFile = new TreeMap<>(file1);
         file2.forEach(
                 (key, value) -> mergingFile.merge(key, value, (value1, value2) -> value2)
@@ -42,20 +53,18 @@ public class Differ {
     }
 
     private static HashMap<String, String> read(String path) throws IOException {
-        String absolutePath = castAbsolutePath(path);
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(new File(absolutePath));
+        JsonNode jsonNode = objectMapper.readTree(new File(castAbsolutePath(path)));
         String fileContent = jsonNode.toString();
         return objectMapper.readValue(fileContent, new TypeReference<>() { });
     }
 
     private static String castAbsolutePath(String path) throws IOException {
-        Path checking = Paths.get(path);
-        if (checking.isAbsolute()) {
+        if (Paths.get(path).isAbsolute()) {
             return path;
         }
-        Path rootPath = Paths.get("/home");
-        return Files.find(rootPath,
+        String rootPath = "/" + Paths.get(path).toAbsolutePath().getName(0);
+        return Files.find(Paths.get(rootPath),
                 Integer.MAX_VALUE,
                 (p, basicFileAttributes) ->
                         p.getFileName().toString().equals(path))
