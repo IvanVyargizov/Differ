@@ -63,7 +63,8 @@ public class Differ {
         if (Paths.get(path).isAbsolute()) {
             return path;
         }
-        String rootPath = "/" + Paths.get(path).toAbsolutePath().getName(0);
+        String rootPath = Paths.get(path).toAbsolutePath().getRoot().toString()
+                + Paths.get(path).toAbsolutePath().getName(0);
         return Files.find(Paths.get(rootPath),
                 Integer.MAX_VALUE,
                 (p, basicFileAttributes) ->
