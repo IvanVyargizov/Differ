@@ -30,7 +30,10 @@ public class Differ {
         } catch (IOException ioe) {
             return "Incorrect path to second file. No such file or directory";
         }
+        return "{\n" + String.join("\n", compare(file1, file2)) + "\n}";
+    }
 
+    private static LinkedList<String> compare(HashMap<String, String> file1, HashMap<String, String> file2) {
         TreeMap<String, String> mergingFile = new TreeMap<>(file1);
         file2.forEach(
                 (key, value) -> mergingFile.merge(key, value, (value1, value2) -> value2)
@@ -39,18 +42,18 @@ public class Differ {
         mergingFile.forEach(
                 (key, value) -> {
                     if (!file1.containsKey(key) && file2.containsKey(key)) {
-                        diff.add("  + " + key + ": " + value);
+                        diff.addLast("  + " + key + ": " + value);
                     } else if (file1.containsKey(key) && !file2.containsKey(key)) {
-                        diff.add("  - " + key + ": " + value);
+                        diff.addLast("  - " + key + ": " + value);
                     } else if (!value.equals(file1.get(key))) {
-                        diff.add("  - " + key + ": " + file1.get(key));
-                        diff.add("  + " + key + ": " + value);
+                        diff.addLast("  - " + key + ": " + file1.get(key));
+                        diff.addLast("  + " + key + ": " + value);
                     } else {
-                        diff.add("    " + key + ": " + value);
+                        diff.addLast("    " + key + ": " + value);
                     }
                 }
         );
-        return "{\n" + String.join("\n", diff) + "\n}";
+        return diff;
     }
 
     private static HashMap<String, String> read(String path) throws IOException {
