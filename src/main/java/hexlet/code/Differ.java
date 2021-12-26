@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -20,14 +21,14 @@ public class Differ {
         try {
             file1 = read(path1);
         } catch (IOException ioe) {
-            return "Incorrect path to first file. Exception: " + ioe;
+            return "Incorrect path to first file. No such file or directory";
         }
 
         HashMap<String, String> file2;
         try {
             file2 = read(path2);
         } catch (IOException ioe) {
-            return "Incorrect path to second file. Exception: " + ioe;
+            return "Incorrect path to second file. No such file or directory";
         }
 
         TreeMap<String, String> mergingFile = new TreeMap<>(file1);
@@ -59,16 +60,15 @@ public class Differ {
         return objectMapper.readValue(fileContent, new TypeReference<>() { });
     }
 
-    private static String castAbsolutePath(String path) throws IOException {
+    public static String castAbsolutePath(String path) throws IOException {
         if (Paths.get(path).isAbsolute()) {
             return path;
         }
-        String rootPath = Paths.get(path).toAbsolutePath().getRoot().toString()
-                + Paths.get(path).toAbsolutePath().getName(0);
-        return Files.find(Paths.get(rootPath),
+        Path rootPath = Paths.get(path).toAbsolutePath().getRoot().resolve(Paths.get(path).toAbsolutePath().getName(0));
+        return Files.find(rootPath,
                 Integer.MAX_VALUE,
                 (p, basicFileAttributes) ->
-                        p.getFileName().toString().equals(path))
+                        p.endsWith(Paths.get(path)))
                 .collect(Collectors.toList()).toString()
                 .replaceAll("\\[", "")
                 .replaceAll("]", "");
