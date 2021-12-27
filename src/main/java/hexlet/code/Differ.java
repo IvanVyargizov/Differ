@@ -63,7 +63,7 @@ public class Differ {
         return objectMapper.readValue(fileContent, new TypeReference<>() { });
     }
 
-    public static String castAbsolutePath(String path) throws IOException {
+    private static String castAbsolutePath(String path) throws IOException {
         if (Paths.get(path).isAbsolute()) {
             return path;
         }

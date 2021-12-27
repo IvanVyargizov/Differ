@@ -18,7 +18,15 @@ class AppTest {
     private static final String FILE_2 = "file2.json";
     private static final String FILE_3 = "file3.json";
     private static final String FILE_4 = "file4.json";
-    private static final String FILE_5 = "file5.json";
+    private static final String FILE_5 = "/file5.json";
+    private final String filePath1 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_1)).getPath();
+    private final String filePath2 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_2)).getPath();
+    private final String filePath3 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_3)).getPath();
+    private final String filePath4 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_4)).getPath();
 
     @BeforeEach
     void setUp() {
@@ -36,8 +44,6 @@ class AppTest {
                   + timeout: 20
                   + verbose: true
                 }""";
-        String filePath1 = Objects.requireNonNull(this.getClass().getClassLoader().getResource(FILE_1)).getPath();
-        String filePath2 = Objects.requireNonNull(this.getClass().getClassLoader().getResource(FILE_2)).getPath();
         App.main(new String[] {filePath1, filePath2});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
@@ -50,7 +56,6 @@ class AppTest {
                     timeout: 20
                     verbose: true
                 }""";
-        String filePath2 = Objects.requireNonNull(this.getClass().getClassLoader().getResource(FILE_2)).getPath();
         App.main(new String[] {filePath2, filePath2});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
@@ -68,8 +73,6 @@ class AppTest {
                   - timeout: 50
                   + timeout: 10
                 }""";
-        String filePath1 = Objects.requireNonNull(this.getClass().getClassLoader().getResource(FILE_1)).getPath();
-        String filePath3 = Objects.requireNonNull(this.getClass().getClassLoader().getResource(FILE_3)).getPath();
         App.main(new String[] {filePath1, filePath3});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
@@ -82,19 +85,28 @@ class AppTest {
                   - timeout: 20
                   - verbose: true
                 }""";
-        String filePath2 = Objects.requireNonNull(this.getClass().getClassLoader().getResource(FILE_2)).getPath();
-        String filePath4 = Objects.requireNonNull(this.getClass().getClassLoader().getResource(FILE_4)).getPath();
         App.main(new String[] {filePath2, filePath4});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
-//    @Test
-//    void test5()  {
-//        String expected = "Incorrect path to second file. No such file or directory";
-//        String filePath1 = Objects.requireNonNull(this.getClass().getClassLoader().getResource(FILE_1)).getPath();
-//        App.main(new String[] {filePath1, FILE_5});
-//        assertThat(output.toString().trim()).isEqualTo(expected);
-//    }
+    @Test
+    void test5() {
+        String expected = """
+                {
+                  + host: hexlet.io
+                  + timeout: 20
+                  + verbose: true
+                }""";
+        App.main(new String[] {filePath4, filePath2});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
+
+    @Test
+    void test6()  {
+        String expected = "Incorrect path to second file. No such file or directory";
+        App.main(new String[] {filePath1, FILE_5});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
 
     @AfterEach
     void tearDown() {
