@@ -14,19 +14,32 @@ class AppTest {
 
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
-    private static final String FILE_1 = "file1.json";
-    private static final String FILE_2 = "file2.json";
-    private static final String FILE_3 = "file3.json";
-    private static final String FILE_4 = "file4.json";
-    private static final String FILE_5 = "/file5.json";
-    private final String filePath1 = Objects.requireNonNull(
-            this.getClass().getClassLoader().getResource(FILE_1)).getPath();
-    private final String filePath2 = Objects.requireNonNull(
-            this.getClass().getClassLoader().getResource(FILE_2)).getPath();
-    private final String filePath3 = Objects.requireNonNull(
-            this.getClass().getClassLoader().getResource(FILE_3)).getPath();
-    private final String filePath4 = Objects.requireNonNull(
-            this.getClass().getClassLoader().getResource(FILE_4)).getPath();
+    private static final String FILE_1_JSON = "file1.json";
+    private static final String FILE_2_JSON = "file2.json";
+    private static final String FILE_3_JSON = "file3.json";
+    private static final String FILE_4_JSON = "file4.json";
+    private static final String FILE_5_JSON = "/file5.json";
+    private final String filePathJson1 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_1_JSON)).getPath();
+    private final String filePathJson2 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_2_JSON)).getPath();
+    private final String filePathJson3 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_3_JSON)).getPath();
+    private final String filePathJson4 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_4_JSON)).getPath();
+
+    private static final String FILE_1_YAML = "file1.yml";
+    private static final String FILE_2_YAML = "file2.yml";
+    private static final String FILE_3_YAML = "file3.yml";
+    private static final String FILE_4_YAML = "file4.yml";
+    private final String filePathYaml1 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_1_YAML)).getPath();
+    private final String filePathYaml2 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_2_YAML)).getPath();
+    private final String filePathYaml3 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_3_YAML)).getPath();
+    private final String filePathYaml4 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE_4_YAML)).getPath();
 
     @BeforeEach
     void setUp() {
@@ -34,7 +47,7 @@ class AppTest {
     }
 
     @Test
-    void test1() {
+    void testJson1() {
         String expected = """
                 {
                   - follow: false
@@ -44,24 +57,51 @@ class AppTest {
                   + timeout: 20
                   + verbose: true
                 }""";
-        App.main(new String[] {filePath1, filePath2});
+        App.main(new String[] {filePathJson1, filePathJson2});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
-    void test2() {
+    void testYaml1() {
+        String expected = """
+                {
+                  - follow: false
+                    host: hexlet.io
+                  - proxy: 123.234.53.22
+                  - timeout: 50
+                  + timeout: 20
+                  + verbose: true
+                }""";
+        App.main(new String[] {filePathYaml1, filePathYaml2});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
+
+    @Test
+    void testJson2() {
         String expected = """
                 {
                     host: hexlet.io
                     timeout: 20
                     verbose: true
                 }""";
-        App.main(new String[] {filePath2, filePath2});
+        App.main(new String[] {filePathJson2, filePathJson2});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
-    void test3() {
+    void testYaml2() {
+        String expected = """
+                {
+                    host: hexlet.io
+                    timeout: 20
+                    verbose: true
+                }""";
+        App.main(new String[] {filePathYaml2, filePathYaml2});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
+
+    @Test
+    void testJson3() {
         String expected = """
                 {
                   - follow: false
@@ -73,38 +113,79 @@ class AppTest {
                   - timeout: 50
                   + timeout: 10
                 }""";
-        App.main(new String[] {filePath1, filePath3});
+        App.main(new String[] {filePathJson1, filePathJson3});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
-    void test4() {
+    void testYaml3() {
+        String expected = """
+                {
+                  - follow: false
+                  + follow: true
+                  - host: hexlet.io
+                  + host: hexlet.io.ru
+                  - proxy: 123.234.53.22
+                  + proxy: 123.234.53.11
+                  - timeout: 50
+                  + timeout: 10
+                }""";
+        App.main(new String[] {filePathYaml1, filePathYaml3});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
+
+    @Test
+    void testJson4() {
         String expected = """
                 {
                   - host: hexlet.io
                   - timeout: 20
                   - verbose: true
                 }""";
-        App.main(new String[] {filePath2, filePath4});
+        App.main(new String[] {filePathJson2, filePathJson4});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
-    void test5() {
+    void testYaml4() {
+        String expected = """
+                {
+                  - host: hexlet.io
+                  - timeout: 20
+                  - verbose: true
+                }""";
+        App.main(new String[] {filePathYaml2, filePathYaml4});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
+
+    @Test
+    void testJson5() {
         String expected = """
                 {
                   + host: hexlet.io
                   + timeout: 20
                   + verbose: true
                 }""";
-        App.main(new String[] {filePath4, filePath2});
+        App.main(new String[] {filePathJson4, filePathJson2});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
+
+    @Test
+    void testYaml5() {
+        String expected = """
+                {
+                  + host: hexlet.io
+                  + timeout: 20
+                  + verbose: true
+                }""";
+        App.main(new String[] {filePathYaml4, filePathYaml2});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
     void test6()  {
         String expected = "Incorrect path to second file. No such file or directory";
-        App.main(new String[] {filePath1, FILE_5});
+        App.main(new String[] {filePathJson1, FILE_5_JSON});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
