@@ -4,4 +4,4 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/62c102feec5c6172b6b9/maintainability)](https://codeclimate.com/github/IvanVyargizov/java-project-lvl2/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/62c102feec5c6172b6b9/test_coverage)](https://codeclimate.com/github/IvanVyargizov/java-project-lvl2/test_coverage)
 ### Differ
-[![asciicast](https://asciinema.org/a/eDMGb22jiUyKmCH4xciqLJsTd.svg)](https://asciinema.org/a/eDMGb22jiUyKmCH4xciqLJsTd)
+[![asciicast](https://asciinema.org/a/drYOtFJHhruJJqToARliajlWC.svg)](https://asciinema.org/a/drYOtFJHhruJJqToARliajlWC)

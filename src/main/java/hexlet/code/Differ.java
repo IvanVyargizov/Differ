@@ -12,14 +12,14 @@ public class Differ {
         try {
             file1 = Parser.read(path1);
         } catch (IOException ioe) {
-            return "Incorrect path to first file. No such file or directory";
+            return "Incorrect path to first file. No such file or path leads to multiple files with the same pathname";
         }
 
         HashMap<String, String> file2;
         try {
             file2 = Parser.read(path2);
         } catch (IOException ioe) {
-            return "Incorrect path to second file. No such file or directory";
+            return "Incorrect path to second file. No such file or path leads to multiple files with the same pathname";
         }
         return "{\n" + String.join("\n", compare(file1, file2)) + "\n}";
     }
