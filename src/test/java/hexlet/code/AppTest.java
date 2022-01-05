@@ -184,8 +184,8 @@ class AppTest {
 
     @Test
     void test6()  {
-        String expected = "Incorrect path to second file. " +
-                "No such file or path leads to multiple files with the same pathname";
+        String expected = "Incorrect path to second file. "
+                + "No such file or path leads to multiple files with the same pathname";
         App.main(new String[] {filePathJson1, FILE_5_JSON});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
