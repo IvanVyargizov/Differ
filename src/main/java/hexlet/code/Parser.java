@@ -1,7 +1,6 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
@@ -24,15 +23,35 @@ public class Parser {
         }
         switch (caseFormat) {
             case 1 -> {
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode jsonNode = objectMapper.readTree(new File(castAbsolutePath(path)));
-                String fileContent = jsonNode.toString();
-                return objectMapper.readValue(fileContent, new TypeReference<>() { });
+                ObjectMapper mapper = new ObjectMapper();
+                HashMap<String, String> fileContent = new HashMap<>();
+                mapper.readValue(new File(castAbsolutePath(path)), new TypeReference<HashMap<String, Object>>() { })
+                        .forEach(
+                        (key, value) -> {
+                            if (value == null) {
+                                fileContent.put(key, "null");
+                            } else {
+                                fileContent.put(key, value.toString());
+                            }
+                        }
+                    );
+                return fileContent;
             }
             case 2 -> {
-                ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-                objectMapper.findAndRegisterModules();
-                return objectMapper.readValue(new File(castAbsolutePath(path)), new TypeReference<>() { });
+                ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+                mapper.findAndRegisterModules();
+                HashMap<String, String> fileContent = new HashMap<>();
+                mapper.readValue(new File(castAbsolutePath(path)), new TypeReference<HashMap<String, Object>>() { })
+                        .forEach(
+                                (key, value) -> {
+                                    if (value == null) {
+                                        fileContent.put(key, "null");
+                                    } else {
+                                        fileContent.put(key, value.toString());
+                                    }
+                                }
+                    );
+                return fileContent;
             }
             default -> {
                 System.out.println("unsupported format");
