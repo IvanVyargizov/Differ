@@ -1,11 +1,13 @@
 package hexlet.code;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import java.io.IOException;
 import java.util.HashMap;
 
 public class Differ {
 
-    public static String generate(String path1, String path2, String formatName) {
+    public static String generate(String path1, String path2, String formatName) throws JsonProcessingException {
         HashMap<String, String> file1;
         try {
             file1 = Parser.read(path1);
