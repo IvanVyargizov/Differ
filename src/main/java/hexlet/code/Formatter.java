@@ -19,5 +19,8 @@ public class Formatter {
             return Stylish.compare(file1, file2);
         }
     }
+    public static String outputFormat(HashMap<String, String> file1, HashMap<String, String> file2) {
+        return Stylish.compare(file1, file2);
+    }
 
 }
