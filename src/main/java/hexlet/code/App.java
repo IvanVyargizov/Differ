@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -24,7 +25,7 @@ public class App implements Callable<Integer> {
     private String filepath2;
 
     @Override
-    public final Integer call() {
+    public final Integer call() throws JsonProcessingException {
         System.out.println(Differ.generate(filepath1, filepath2, formatName));
         return 0;
     }
