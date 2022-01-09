@@ -6,6 +6,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
+import java.io.IOException;
 import java.util.concurrent.Callable;
 
 @Command (
@@ -25,7 +26,7 @@ public class App implements Callable<Integer> {
     private String filepath2;
 
     @Override
-    public final Integer call() throws JsonProcessingException {
+    public final Integer call() throws IOException {
         System.out.println(Differ.generate(filepath1, filepath2, formatName));
         return 0;
     }

@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class Differ {
 
-    public static String generate(String path1, String path2, String formatName) throws JsonProcessingException {
+    public static String generate(String path1, String path2, String formatName) throws IOException {
         HashMap<String, String> file1;
         try {
             file1 = Parser.read(path1);
