@@ -1,8 +1,5 @@
 package hexlet.code;
 
-import hexlet.code.formatters.Plain;
-import hexlet.code.formatters.Stylish;
-
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -22,8 +19,6 @@ public class Differ {
         } catch (IOException ioe) {
             return "Incorrect path to second file. No such file or path leads to multiple files with the same pathname";
         }
-        return formatName.equals("plain")
-                ? String.join("\n", Plain.compare(file1, file2))
-                : "{\n" + String.join("\n", Stylish.compare(file1, file2)) + "\n}";
+        return Formatter.outputFormat(file1, file2, formatName);
     }
 }
