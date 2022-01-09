@@ -6,7 +6,7 @@ import java.util.TreeMap;
 
 public class Plain {
 
-    public static LinkedList<String> compare(HashMap<String, String> file1, HashMap<String, String> file2) {
+    public static String compare(HashMap<String, String> file1, HashMap<String, String> file2) {
         TreeMap<String, String> mergingFile = new TreeMap<>(file1);
         file2.forEach(
                 (key, value) -> mergingFile.merge(key, value, (value1, value2) -> value2)
@@ -24,7 +24,7 @@ public class Plain {
                     }
                 }
         );
-        return diff;
+        return String.join("\n", diff);
     }
 
     private static String convert(String element) {
