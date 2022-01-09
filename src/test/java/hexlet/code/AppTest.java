@@ -44,6 +44,7 @@ class AppTest {
 
     private final String outputFormat1 = "stylish";
     private final String outputFormat2 = "plain";
+    private final String outputFormat3 = "json";
 
     @BeforeEach
     void setUp() {
@@ -225,8 +226,36 @@ class AppTest {
     }
 
     @Test
+    @DisplayName("'json' file comparison test. 'json' format explicitly indicated")
+    void test10() {
+        String expected = """
+                {"chars1":"[a, b, c]","- chars2":"[d, e, f]","+ chars2":"false","- checked":"false","""
+                + """
+                "+ checked":"true","- default":"null","+ default":"[value1, value2]","- id":"45","+ id":"null","""
+                + """
+                "- key1":"value1","+ key2":"value2","numbers1":"[1, 2, 3, 4]","- numbers2":"[2, 3, 4, 5]","""
+                + """
+                "+ numbers2":"[22, 33, 44, 55]","- numbers3":"[3, 4, 5]","+ numbers4":"[4, 5, 6]","""
+                + """
+                "+ obj1":"{nestedKey=value, isNested=true}","- setting1":"Some value","+ setting1":"Another value","""
+                + """
+                "- setting2":"200","+ setting2":"300","- setting3":"true","+ setting3":"none"}""";
+        App.main(new String[] {filePathJson1, filePathJson2, "-f", outputFormat3});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("'yaml' file comparison test. 'json' format explicitly indicated")
+    void test11() {
+        String expected = """
+                {"- follow":"true","- host":"hexlet.io.ru","- proxy":"123.234.53.11","- timeout":"10"}""";
+        App.main(new String[] {filePathYaml3, filePathYaml4, "-f", outputFormat3});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
+
+    @Test
     @DisplayName("file comparison test, if the second file does not exist")
-    void test10()  {
+    void test12()  {
         String expected = "Incorrect path to second file. "
                 + "No such file or path leads to multiple files with the same pathname";
         App.main(new String[] {filePathJson1, FILE_5_JSON});
