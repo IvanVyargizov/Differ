@@ -2,6 +2,7 @@ package hexlet.code;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -41,13 +42,17 @@ class AppTest {
     private final String filePathYaml4 = Objects.requireNonNull(
             this.getClass().getClassLoader().getResource(FILE_4_YAML)).getPath();
 
+    private final String outputFormat1 = "stylish";
+    private final String outputFormat2 = "plain";
+
     @BeforeEach
     void setUp() {
         System.setOut(new PrintStream(output));
     }
 
     @Test
-    void testJson1() {
+    @DisplayName("'json' file comparison test. 'stylish' format default")
+    void test1() {
         String expected = """
                 {
                     chars1: [a, b, c]
@@ -79,7 +84,8 @@ class AppTest {
     }
 
     @Test
-    void testYaml1() {
+    @DisplayName("'yaml' file comparison test. 'stylish' format default")
+    void test2() {
         String expected = """
                 {
                     chars1: [a, b, c]
@@ -111,7 +117,50 @@ class AppTest {
     }
 
     @Test
-    void testJson2() {
+    @DisplayName("'json' file comparison test. 'plain' format explicitly indicated")
+    void test3() {
+        String expected = """
+                Property 'chars2' was updated. From [complex value] to false
+                Property 'checked' was updated. From false to true
+                Property 'default' was updated. From null to [complex value]
+                Property 'id' was updated. From 45 to null
+                Property 'key1' was removed
+                Property 'key2' was added with value: 'value2'
+                Property 'numbers2' was updated. From [complex value] to [complex value]
+                Property 'numbers3' was removed
+                Property 'numbers4' was added with value: [complex value]
+                Property 'obj1' was added with value: [complex value]
+                Property 'setting1' was updated. From 'Some value' to 'Another value'
+                Property 'setting2' was updated. From 200 to 300
+                Property 'setting3' was updated. From true to 'none'""";
+        App.main(new String[] {filePathJson1, filePathJson2, "-f", outputFormat2});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("'yaml' file comparison test. 'plain' format explicitly indicated")
+    void test4() {
+        String expected = """
+                Property 'chars2' was updated. From [complex value] to false
+                Property 'checked' was updated. From false to true
+                Property 'default' was updated. From null to [complex value]
+                Property 'id' was updated. From 45 to null
+                Property 'key1' was removed
+                Property 'key2' was added with value: 'value2'
+                Property 'numbers2' was updated. From [complex value] to [complex value]
+                Property 'numbers3' was removed
+                Property 'numbers4' was added with value: [complex value]
+                Property 'obj1' was added with value: [complex value]
+                Property 'setting1' was updated. From 'Some value' to 'Another value'
+                Property 'setting2' was updated. From 200 to 300
+                Property 'setting3' was updated. From true to 'none'""";
+        App.main(new String[] {filePathYaml1, filePathYaml2, "-f", outputFormat2});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("'json' file comparison test. 'stylish' format explicitly indicated")
+    void test5() {
         String expected = """
                 {
                     follow: true
@@ -119,25 +168,13 @@ class AppTest {
                     proxy: 123.234.53.11
                     timeout: 10
                 }""";
-        App.main(new String[] {filePathJson3, filePathJson3});
+        App.main(new String[] {filePathJson3, filePathJson3, "-f", outputFormat1});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
-    void testYaml2() {
-        String expected = """
-                {
-                    follow: true
-                    host: hexlet.io.ru
-                    proxy: 123.234.53.11
-                    timeout: 10
-                }""";
-        App.main(new String[] {filePathYaml3, filePathYaml3});
-        assertThat(output.toString().trim()).isEqualTo(expected);
-    }
-
-    @Test
-    void testJson3() {
+    @DisplayName("'yaml' file comparison test. 'stylish' format explicitly indicated")
+    void test6() {
         String expected = """
                 {
                   - follow: true
@@ -145,25 +182,25 @@ class AppTest {
                   - proxy: 123.234.53.11
                   - timeout: 10
                 }""";
-        App.main(new String[] {filePathJson3, filePathJson4});
+        App.main(new String[] {filePathYaml3, filePathYaml4, "-f", outputFormat1});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
-    void testYaml3() {
+    @DisplayName("'yaml' file comparison test. 'plain' format explicitly indicated")
+    void test7() {
         String expected = """
-                {
-                  - follow: true
-                  - host: hexlet.io.ru
-                  - proxy: 123.234.53.11
-                  - timeout: 10
-                }""";
-        App.main(new String[] {filePathYaml3, filePathYaml4});
+                Property 'follow' was removed
+                Property 'host' was removed
+                Property 'proxy' was removed
+                Property 'timeout' was removed""";
+        App.main(new String[] {filePathYaml3, filePathYaml4, "-f", outputFormat2});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
-    void testJson4() {
+    @DisplayName("'json' file comparison test. 'stylish' format default")
+    void test8() {
         String expected = """
                 {
                   + follow: true
@@ -176,20 +213,20 @@ class AppTest {
     }
 
     @Test
-    void testYaml4() {
+    @DisplayName("'json' file comparison test. 'plain' format explicitly indicated")
+    void test9() {
         String expected = """
-                {
-                  + follow: true
-                  + host: hexlet.io.ru
-                  + proxy: 123.234.53.11
-                  + timeout: 10
-                }""";
-        App.main(new String[] {filePathYaml4, filePathYaml3});
+                Property 'follow' was added with value: true
+                Property 'host' was added with value: 'hexlet.io.ru'
+                Property 'proxy' was added with value: '123.234.53.11'
+                Property 'timeout' was added with value: 10""";
+        App.main(new String[] {filePathJson4, filePathJson3, "-f", outputFormat2});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
-    void test5()  {
+    @DisplayName("file comparison test, if the second file does not exist")
+    void test10()  {
         String expected = "Incorrect path to second file. "
                 + "No such file or path leads to multiple files with the same pathname";
         App.main(new String[] {filePathJson1, FILE_5_JSON});
