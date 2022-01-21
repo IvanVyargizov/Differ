@@ -50,7 +50,7 @@ public class Differ {
         try {
             return Formatter.output(diff, outputFormat);
         } catch (IOException ioe) {
-            return ioe.getMessage();
+            return "Error";
         }
 
     }
@@ -70,7 +70,7 @@ public class Differ {
         return fileContent.toString().trim();
     }
 
-    private static String getFileFormat(String path) throws IOException {
+    public static String getFileFormat(String path) throws IOException {
         if (path.endsWith(".json")) {
             return "json";
         } else if (path.endsWith(".yml")) {

@@ -42,7 +42,9 @@ class AppTest {
     private final String filePathYaml4 = Objects.requireNonNull(
             this.getClass().getClassLoader().getResource(FILE_4_YAML)).getPath();
 
-    private static final String FILE = "file.md";
+    private static final String FILE = "file.docx";
+    private final String filePath5 = Objects.requireNonNull(
+            this.getClass().getClassLoader().getResource(FILE)).getPath();
 
     private final String outputFormat1 = "stylish";
     private final String outputFormat2 = "plain";
@@ -269,7 +271,7 @@ class AppTest {
     void test13()  {
         String expected = "Error. Please check the passed path to first file and format of first file "
                 + "(the file format should be 'json' or 'yml')";
-        App.main(new String[] {FILE, filePathJson1});
+        App.main(new String[] {filePath5, filePathJson1});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
