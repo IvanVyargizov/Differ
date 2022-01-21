@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class Differ {
 
-    public static String generate(String path1, String path2, String outputFormat) throws IOException {
+    public static String generate(String path1, String path2, String outputFormat) {
         Map<String, String> fileContent1;
         try {
             fileContent1 = Parser.parse(read(path1), getFileFormat(path1));
@@ -47,10 +47,15 @@ public class Differ {
                     }
                 }
         );
-        return Formatter.output(diff, outputFormat);
+        try {
+            return Formatter.output(diff, outputFormat);
+        } catch (IOException ioe) {
+            return ioe.getMessage();
+        }
+
     }
 
-    public static String generate(String path1, String path2) throws IOException {
+    public static String generate(String path1, String path2) {
         final String defaultFormat = "stylish";
         return generate(path1, path2, defaultFormat);
     }
@@ -65,13 +70,13 @@ public class Differ {
         return fileContent.toString().trim();
     }
 
-    private static String getFileFormat(String path) {
+    private static String getFileFormat(String path) throws IOException {
         if (path.endsWith(".json")) {
             return "json";
         } else if (path.endsWith(".yml")) {
             return "yaml";
         } else {
-            return "Unsupported file format";
+            throw new IOException();
         }
     }
 

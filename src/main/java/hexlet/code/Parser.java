@@ -11,18 +11,14 @@ import java.util.Map;
 public class Parser {
 
     public static Map<String, String> parse(String content, String fileFormat) throws IOException {
-        switch (fileFormat) {
-            case "json" -> {
-                ObjectMapper mapper = new ObjectMapper();
-                return convert(mapper.readValue(content, new TypeReference<>() { }));
-            }
-            case "yaml" -> {
-                ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-                mapper.findAndRegisterModules();
-                return convert(mapper.readValue(content, new TypeReference<>() { }));
-            }
-            default -> throw new IOException();
+        ObjectMapper mapper;
+        if (fileFormat.equals("json")) {
+            mapper = new ObjectMapper();
+        } else {
+            mapper = new ObjectMapper(new YAMLFactory());
+            mapper.findAndRegisterModules();
         }
+        return convert(mapper.readValue(content, new TypeReference<>() { }));
     }
 
     private static Map<String, String> convert(Map<String, Object> content) {

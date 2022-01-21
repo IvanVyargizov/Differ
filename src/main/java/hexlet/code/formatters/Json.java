@@ -1,13 +1,14 @@
 package hexlet.code.formatters;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 
 public class Json {
 
-    public static String format(LinkedHashMap<String, String> diff) throws JsonProcessingException {
+    public static String format(LinkedHashMap<String, String> diff) throws IOException {
         LinkedHashMap<String, String> formatting = new LinkedHashMap<>();
         diff.forEach(
                 (key, value) -> {
