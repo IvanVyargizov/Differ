@@ -3,35 +3,23 @@ package hexlet.code.formatters;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.TreeMap;
 
 public class Json {
 
-    public static String compare(HashMap<String, String> file1, HashMap<String, String> file2)
-            throws JsonProcessingException {
-        TreeMap<String, String> mergingFile = new TreeMap<>(file1);
-        file2.forEach(
-                (key, value) -> mergingFile.merge(key, value, (value1, value2) -> value2)
-        );
-        LinkedHashMap<String, String> diff = new LinkedHashMap<>();
-        mergingFile.forEach(
+    public static String format(LinkedHashMap<String, String> diff) throws JsonProcessingException {
+        LinkedHashMap<String, String> formatting = new LinkedHashMap<>();
+        diff.forEach(
                 (key, value) -> {
-                    if (!file1.containsKey(key) && file2.containsKey(key)) {
-                        diff.put("+ " + key, value);
-                    } else if (file1.containsKey(key) && !file2.containsKey(key)) {
-                        diff.put("- " + key, value);
-                    } else if (!value.equals(file1.get(key))) {
-                        diff.put("- " + key, file1.get(key));
-                        diff.put("+ " + key, value);
-                    } else {
-                        diff.put(key, value);
+                    switch (key.substring(0, 2)) {
+                        case "++", " +" -> formatting.put("+ " + key.substring(2), value);
+                        case "--", " -" -> formatting.put("- " + key.substring(2), value);
+                        default -> formatting.put(key, value);
                     }
                 }
         );
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(diff);
+        return mapper.writeValueAsString(formatting);
     }
 
 }

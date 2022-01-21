@@ -4,74 +4,36 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class Parser {
 
-    public static HashMap<String, String> read(String path) throws IOException {
-        int caseFormat = 0;
-        if (path.endsWith(".json")) {
-            caseFormat = 1;
-        } else if (path.endsWith(".yml")) {
-            caseFormat = 2;
-        }
-        switch (caseFormat) {
-            case 1 -> {
+    public static Map<String, String> parse(String content, String fileFormat) throws IOException {
+        switch (fileFormat) {
+            case "json" -> {
                 ObjectMapper mapper = new ObjectMapper();
-                HashMap<String, String> fileContent = new HashMap<>();
-                mapper.readValue(new File(castAbsolutePath(path)), new TypeReference<HashMap<String, Object>>() { })
-                        .forEach(
-                        (key, value) -> {
-                            if (value == null) {
-                                fileContent.put(key, "null");
-                            } else {
-                                fileContent.put(key, value.toString());
-                            }
-                        }
-                    );
-                return fileContent;
+                return convert(mapper.readValue(content, new TypeReference<>() { }));
             }
-            case 2 -> {
+            case "yaml" -> {
                 ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
                 mapper.findAndRegisterModules();
-                HashMap<String, String> fileContent = new HashMap<>();
-                mapper.readValue(new File(castAbsolutePath(path)), new TypeReference<HashMap<String, Object>>() { })
-                        .forEach(
-                                (key, value) -> {
-                                    if (value == null) {
-                                        fileContent.put(key, "null");
-                                    } else {
-                                        fileContent.put(key, value.toString());
-                                    }
-                                }
-                    );
-                return fileContent;
+                return convert(mapper.readValue(content, new TypeReference<>() { }));
             }
-            default -> {
-                System.out.println("unsupported format");
-                return new HashMap<>();
-            }
+            default -> throw new IOException();
         }
     }
 
-    private static String castAbsolutePath(String path) throws IOException {
-        if (Paths.get(path).isAbsolute()) {
-            return path;
-        }
-        Path rootPath = Paths.get(path).toAbsolutePath().getRoot().resolve(Paths.get(path).toAbsolutePath().getName(0));
-        return Files.find(rootPath,
-                Integer.MAX_VALUE,
-                (p, basicFileAttributes) ->
-                        p.endsWith(Paths.get(path)))
-                .collect(Collectors.toList()).toString()
-                .replaceAll("\\[", "")
-                .replaceAll("]", "");
+    private static Map<String, String> convert(Map<String, Object> content) {
+        Map<String, String> convertingContentValue = new HashMap<>();
+        content.forEach(
+                (key, value) -> {
+                    String strValue = (value == null) ? "null" : value.toString();
+                    convertingContentValue.put(key, strValue);
+                }
+        );
+        return convertingContentValue;
     }
 
 }

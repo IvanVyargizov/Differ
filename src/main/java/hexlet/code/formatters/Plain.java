@@ -1,30 +1,30 @@
 package hexlet.code.formatters;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.TreeMap;
 
 public class Plain {
 
-    public static String compare(HashMap<String, String> file1, HashMap<String, String> file2) {
-        TreeMap<String, String> mergingFile = new TreeMap<>(file1);
-        file2.forEach(
-                (key, value) -> mergingFile.merge(key, value, (value1, value2) -> value2)
-        );
-        LinkedList<String> diff = new LinkedList<>();
-        mergingFile.forEach(
+    public static String format(LinkedHashMap<String, String> diff) {
+        LinkedList<String> formatting = new LinkedList<>();
+        diff.forEach(
                 (key, value) -> {
-                    if (!file1.containsKey(key) && file2.containsKey(key)) {
-                        diff.addLast("Property '" + key + "' was added with value: " + convert(value));
-                    } else if (file1.containsKey(key) && !file2.containsKey(key)) {
-                        diff.addLast("Property '" + key + "' was removed");
-                    } else if (!value.equals(file1.get(key))) {
-                        diff.addLast("Property '" + key + "' was updated. From " + convert(file1.get(key)) + " to "
+                    switch (key.substring(0, 2)) {
+                        case "++" -> formatting.add("Property '" + key.substring(2) + "' was added with value: "
                                 + convert(value));
+                        case "--" -> formatting.add("Property '" + key.substring(2) + "' was removed");
+                        case " -" -> formatting.add("Property '" + key.substring(2) + "' was updated. From "
+                                + convert(value) + " to ");
+                        case " +" -> {
+                            String update = formatting.getLast() + convert(value);
+                            formatting.removeLast();
+                            formatting.add(update);
+                        }
+                        default -> { }
                     }
                 }
         );
-        return String.join("\n", diff);
+        return String.join("\n", formatting);
     }
 
     private static String convert(String element) {

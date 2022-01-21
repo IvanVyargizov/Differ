@@ -42,6 +42,8 @@ class AppTest {
     private final String filePathYaml4 = Objects.requireNonNull(
             this.getClass().getClassLoader().getResource(FILE_4_YAML)).getPath();
 
+    private static final String FILE = "file.md";
+
     private final String outputFormat1 = "stylish";
     private final String outputFormat2 = "plain";
     private final String outputFormat3 = "json";
@@ -52,7 +54,7 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("'json' file comparison test. 'stylish' format default")
+    @DisplayName("Test1. 'json' file comparison test. 'stylish' format default")
     void test1() {
         String expected = """
                 {
@@ -85,7 +87,7 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("'yaml' file comparison test. 'stylish' format default")
+    @DisplayName("Test2. 'yaml' file comparison test. 'stylish' format default")
     void test2() {
         String expected = """
                 {
@@ -118,7 +120,7 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("'json' file comparison test. 'plain' format explicitly indicated")
+    @DisplayName("Test 3. 'json' file comparison test. 'plain' format explicitly indicated")
     void test3() {
         String expected = """
                 Property 'chars2' was updated. From [complex value] to false
@@ -139,7 +141,7 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("'yaml' file comparison test. 'plain' format explicitly indicated")
+    @DisplayName("Test 4. 'yaml' file comparison test. 'plain' format explicitly indicated")
     void test4() {
         String expected = """
                 Property 'chars2' was updated. From [complex value] to false
@@ -160,7 +162,7 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("'json' file comparison test. 'stylish' format explicitly indicated")
+    @DisplayName("Test 5. 'json' file comparison test. 'stylish' format explicitly indicated")
     void test5() {
         String expected = """
                 {
@@ -174,7 +176,7 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("'yaml' file comparison test. 'stylish' format explicitly indicated")
+    @DisplayName("Test 6. 'yaml' file comparison test. 'stylish' format explicitly indicated")
     void test6() {
         String expected = """
                 {
@@ -188,7 +190,7 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("'yaml' file comparison test. 'plain' format explicitly indicated")
+    @DisplayName("Test 7. 'yaml' file comparison test. 'plain' format explicitly indicated")
     void test7() {
         String expected = """
                 Property 'follow' was removed
@@ -200,7 +202,7 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("'json' file comparison test. 'stylish' format default")
+    @DisplayName("Test 8. 'json' file comparison test. 'stylish' format default")
     void test8() {
         String expected = """
                 {
@@ -214,7 +216,7 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("'json' file comparison test. 'plain' format explicitly indicated")
+    @DisplayName("Test 9. 'json' file comparison test. 'plain' format explicitly indicated")
     void test9() {
         String expected = """
                 Property 'follow' was added with value: true
@@ -226,7 +228,7 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("'json' file comparison test. 'json' format explicitly indicated")
+    @DisplayName("Test 10. 'json' file comparison test. 'json' format explicitly indicated")
     void test10() {
         String expected = """
                 {"chars1":"[a, b, c]","- chars2":"[d, e, f]","+ chars2":"false","- checked":"false","""
@@ -245,7 +247,7 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("'yaml' file comparison test. 'json' format explicitly indicated")
+    @DisplayName("Test 11. 'yaml' file comparison test. 'json' format explicitly indicated")
     void test11() {
         String expected = """
                 {"- follow":"true","- host":"hexlet.io.ru","- proxy":"123.234.53.11","- timeout":"10"}""";
@@ -254,11 +256,20 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("file comparison test, if the second file does not exist")
+    @DisplayName("Test 12. File comparison test, if the second file does not exist")
     void test12()  {
-        String expected = "Incorrect path to second file. "
-                + "No such file or path leads to multiple files with the same pathname";
+        String expected = "Error. Please check the passed path to second file and format of second file "
+                + "(the file format should be 'json' or 'yml')";
         App.main(new String[] {filePathJson1, FILE_5_JSON});
+        assertThat(output.toString().trim()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("Test 13. File comparison test, if the first file has unsupported format")
+    void test13()  {
+        String expected = "Error. Please check the passed path to first file and format of first file "
+                + "(the file format should be 'json' or 'yml')";
+        App.main(new String[] {FILE, filePathJson1});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 

@@ -5,22 +5,22 @@ import hexlet.code.formatters.Json;
 import hexlet.code.formatters.Plain;
 import hexlet.code.formatters.Stylish;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Formatter {
 
-    public static String outputFormat(HashMap<String, String> file1, HashMap<String, String> file2, String formatName)
+    public static String output(LinkedHashMap<String, String> diff, String outputFormat)
             throws JsonProcessingException {
-        if (formatName.equals("plain")) {
-            return Plain.compare(file1, file2);
-        } else if (formatName.equals("json")) {
-            return Json.compare(file1, file2);
-        } else {
-            return Stylish.compare(file1, file2);
+        switch (outputFormat) {
+            case "json" -> {
+                return Json.format(diff);
+            }
+            case "plain" -> {
+                return Plain.format(diff);
+            }
+            default -> {
+                return Stylish.format(diff);
+            }
         }
     }
-    public static String outputFormat(HashMap<String, String> file1, HashMap<String, String> file2) {
-        return Stylish.compare(file1, file2);
-    }
-
 }
