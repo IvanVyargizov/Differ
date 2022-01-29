@@ -1,25 +1,22 @@
 package hexlet.code.formatters;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class Plain {
 
-    public static String format(LinkedHashMap<String, String> diff) {
+    public static String format(List<Map<String, Object>> diff) {
         LinkedList<String> formatting = new LinkedList<>();
         diff.forEach(
-                (key, value) -> {
-                    switch (key.substring(0, 2)) {
-                        case "++" -> formatting.add("Property '" + key.substring(2) + "' was added with value: "
-                                + convert(value));
-                        case "--" -> formatting.add("Property '" + key.substring(2) + "' was removed");
-                        case " -" -> formatting.add("Property '" + key.substring(2) + "' was updated. From "
-                                + convert(value) + " to ");
-                        case " +" -> {
-                            String update = formatting.getLast() + convert(value);
-                            formatting.removeLast();
-                            formatting.add(update);
-                        }
+                (dict) -> {
+                    switch (dict.get("status").toString()) {
+                        case "ADDED" -> formatting.add("Property '" + dict.get("fieldName") + "' was added with value: "
+                                + convert(dict.get("value2")));
+                        case "REMOVED" -> formatting.add("Property '" + dict.get("fieldName") + "' was removed");
+                        case "CHANGED" -> formatting.add("Property '" + dict.get("fieldName") + "' was updated. From "
+                                + convert(dict.get("value1")) + " to " + convert(dict.get("value2")));
                         default -> { }
                     }
                 }
@@ -27,13 +24,15 @@ public class Plain {
         return String.join("\n", formatting);
     }
 
-    private static String convert(String element) {
-        if ((element.startsWith("[") && element.endsWith("]"))
-                || (element.startsWith("{") && element.endsWith("}"))) {
+
+    private static String convert(Object element) {
+        if (Objects.equals(element, null) || element.equals(true) || element.equals(false)
+                || element.toString().chars().allMatch(Character::isDigit)) {
+            return Objects.toString(element);
+        }
+        if ((element.toString().startsWith("[") && element.toString().endsWith("]"))
+                || (element.toString().startsWith("{") && element.toString().endsWith("}"))) {
             return "[complex value]";
-        } else if (element.equals("true") || element.equals("false") || element.equals("null")
-                || element.chars().allMatch(Character::isDigit)) {
-            return element;
         }
         return "'" + element + "'";
     }

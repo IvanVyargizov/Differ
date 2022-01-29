@@ -5,21 +5,18 @@ import hexlet.code.formatters.Plain;
 import hexlet.code.formatters.Stylish;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Formatter {
 
-    public static String output(LinkedHashMap<String, String> diff, String outputFormat) throws IOException {
-        switch (outputFormat) {
-            case "json" -> {
-                return Json.format(diff);
-            }
-            case "plain" -> {
-                return Plain.format(diff);
-            }
-            default -> {
-                return Stylish.format(diff);
-            }
-        }
+    public static String output(List<Map<String, Object>> diff, String outputFormat) throws IOException {
+        return switch (outputFormat) {
+            case "json" -> Json.format(diff);
+            case "plain" -> Plain.format(diff);
+            case "stylish" -> Stylish.format(diff);
+            default -> throw new RuntimeException("Unsupported output format: " + outputFormat);
+        };
     }
+
 }

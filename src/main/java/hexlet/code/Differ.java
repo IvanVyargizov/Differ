@@ -1,86 +1,84 @@
 package hexlet.code;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Objects;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class Differ {
 
-    public static String generate(String path1, String path2, String outputFormat) {
-        Map<String, String> fileContent1;
-        try {
-            fileContent1 = Parser.parse(read(path1), getFileFormat(path1));
-        } catch (IOException ioe) {
-            return "Error. Please check the passed path to first file and format of first file "
-                    + "(the file format should be 'json' or 'yml')";
-        }
-        Map<String, String> fileContent2;
-        try {
-            fileContent2 = Parser.parse(read(path2), getFileFormat(path2));
-        } catch (IOException ioe) {
-            return "Error. Please check the passed path to second file and format of second file "
-                    + "(the file format should be 'json' or 'yml')";
-        }
-        TreeMap<String, String> mergingContent = new TreeMap<>(fileContent1);
-        fileContent2.forEach(
-                (key, value) -> mergingContent.merge(key, value, (value1, value2) -> value2)
-        );
-        LinkedHashMap<String, String> diff = new LinkedHashMap<>();
-        mergingContent.forEach(
-                (key, value) -> {
-                    if (!fileContent1.containsKey(key) && fileContent2.containsKey(key)) {
-                        diff.put("++" + key, value);
-                    } else if (fileContent1.containsKey(key) && !fileContent2.containsKey(key)) {
-                        diff.put("--" + key, value);
-                    } else if (!value.equals(fileContent1.get(key))) {
-                        diff.put(" -" + key, fileContent1.get(key));
-                        diff.put(" +" + key, value);
-                    } else {
-                        diff.put(key, value);
-                    }
-                }
-        );
-        try {
-            return Formatter.output(diff, outputFormat);
-        } catch (IOException ioe) {
-            return "Error";
-        }
+    public static String generate(String path1, String path2, String outputFormat) throws IOException {
+        Map<String, Object> fileContent1
+                = Parser.parse(Files.readString(Path.of(castAbsolutePath(path1))).trim(), getFileFormat(path1));
 
+        Map<String, Object> fileContent2
+                = Parser.parse(Files.readString(Path.of(castAbsolutePath(path2))).trim(), getFileFormat(path2));
+
+        return Formatter.output(generateDiff(fileContent1, fileContent2), outputFormat);
     }
 
-    public static String generate(String path1, String path2) {
+    public static String generate(String path1, String path2) throws IOException {
         final String defaultFormat = "stylish";
         return generate(path1, path2, defaultFormat);
     }
 
-    private static String read(String path) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(castAbsolutePath(path)));
-        String line;
-        StringBuilder fileContent = new StringBuilder();
-        while ((line = br.readLine()) != null) {
-            fileContent.append(line).append("\n");
-        }
-        return fileContent.toString().trim();
+    private static List<Map<String, Object>> generateDiff(Map<String, Object> content1, Map<String, Object> content2) {
+        TreeSet<String> mergingKeyContent = new TreeSet<>(content1.keySet());
+        mergingKeyContent.addAll(content2.keySet());
+        List<Map<String, Object>> diff = new ArrayList<>();
+        mergingKeyContent.forEach(
+                (k) -> {
+                    if (!content1.containsKey(k)) {
+                        Map<String, Object> valueMap = new HashMap<>();
+                        valueMap.put("status", "ADDED");
+                        valueMap.put("fieldName", k);
+                        valueMap.put("value1", "");
+                        valueMap.put("value2", content2.get(k));
+                        diff.add(valueMap);
+                    } else if (!content2.containsKey(k)) {
+                        Map<String, Object> valueMap = new HashMap<>();
+                        valueMap.put("status", "REMOVED");
+                        valueMap.put("fieldName", k);
+                        valueMap.put("value1", content1.get(k));
+                        valueMap.put("value2", "");
+                        diff.add(valueMap);
+                    } else if (!Objects.equals(content1.get(k), content2.get(k))) {
+                        Map<String, Object> valueMap = new HashMap<>();
+                        valueMap.put("status", "CHANGED");
+                        valueMap.put("fieldName", k);
+                        valueMap.put("value1", content1.get(k));
+                        valueMap.put("value2", content2.get(k));
+                        diff.add(valueMap);
+                    } else {
+                        Map<String, Object> valueMap = new HashMap<>();
+                        valueMap.put("status", "UNCHANGED");
+                        valueMap.put("fieldName", k);
+                        valueMap.put("value1", content1.get(k));
+                        valueMap.put("value2", content2.get(k));
+                        diff.add(valueMap);
+                    }
+                }
+        );
+        return diff;
     }
 
-    public static String getFileFormat(String path) throws IOException {
-        if (path.endsWith(".json")) {
-            return "json";
-        } else if (path.endsWith(".yml")) {
-            return "yaml";
-        } else {
-            throw new IOException();
-        }
+    private static String getFileFormat(String path) {
+        return path.substring(path.lastIndexOf("."));
     }
 
-    private static String castAbsolutePath(String path) throws IOException {
+    //По замечаниям к проекту указано, что можно просто использовать Path#toAbsolutePath
+    //Но мой метод castAbsolutePath позволяет находит файл по всей системе
+    //В то время как метод Path#toAbsolutePath переданный путь приводит к абсолютному пути до директории проекта
+    //И если файл существует, но лежит не в директории проекта, то будет выброшено исключение
+    //Прошу меня поправить, если я ошибаюсь или для проекта обработка нахождения файла по всей системе излишне
+    public static String castAbsolutePath(String path) throws IOException {
         if (Paths.get(path).isAbsolute()) {
             return path;
         }
