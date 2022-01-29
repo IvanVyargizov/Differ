@@ -1,11 +1,13 @@
 package hexlet.code;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Objects;
 
@@ -260,19 +262,23 @@ class AppTest {
     @Test
     @DisplayName("Test 12. File comparison test, if the second file does not exist")
     void test12()  {
-        String expected = "Error. Please check the passed path to second file and format of second file "
-                + "(the file format should be 'json' or 'yml')";
-        App.main(new String[] {filePathJson1, FILE_5_JSON});
-        assertThat(output.toString().trim()).isEqualTo(expected);
+        Assertions.assertThrows(IOException.class, () -> Differ.generate(filePathJson1, FILE_5_JSON));
     }
 
     @Test
     @DisplayName("Test 13. File comparison test, if the first file has unsupported format")
     void test13()  {
-        String expected = "Error. Please check the passed path to first file and format of first file "
-                + "(the file format should be 'json' or 'yml')";
-        App.main(new String[] {filePath5, filePathJson1});
-        assertThat(output.toString().trim()).isEqualTo(expected);
+        RuntimeException thrown = Assertions.assertThrows(RuntimeException.class,
+                () -> Differ.generate(filePath5, filePathJson1));
+        Assertions.assertEquals("Unsupported file format: .docx", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Test 14. File comparison test, if the output format unsupported")
+    void test14()  {
+        RuntimeException thrown = Assertions.assertThrows(RuntimeException.class,
+                () -> Differ.generate(filePathYaml1, filePathYaml2, "doc"));
+        Assertions.assertEquals("Unsupported output format: doc", thrown.getMessage());
     }
 
     @AfterEach
