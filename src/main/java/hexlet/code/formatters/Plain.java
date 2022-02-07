@@ -1,39 +1,46 @@
 package hexlet.code.formatters;
 
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Plain {
 
     public static String format(List<Map<String, Object>> diff) {
-        LinkedList<String> formatting = new LinkedList<>();
-        diff.forEach(
-                (dict) -> {
-                    switch (dict.get("status").toString()) {
-                        case "ADDED" -> formatting.add("Property '" + dict.get("fieldName") + "' was added with value: "
-                                + convert(dict.get("value2")));
-                        case "REMOVED" -> formatting.add("Property '" + dict.get("fieldName") + "' was removed");
-                        case "CHANGED" -> formatting.add("Property '" + dict.get("fieldName") + "' was updated. From "
-                                + convert(dict.get("value1")) + " to " + convert(dict.get("value2")));
-                        default -> { }
-                    }
-                }
-        );
-        return String.join("\n", formatting);
-    }
 
+        return diff.stream()
+                .map((node) -> {
+                    switch (node.get("status").toString()) {
+                        case "ADDED" -> {
+                            return "Property '" + node.get("fieldName") + "' was added with value: "
+                                    + convert(node.get("value2"));
+                        }
+                        case "REMOVED" -> {
+                            return "Property '" + node.get("fieldName") + "' was removed";
+                        }
+                        case "CHANGED" -> {
+                            return "Property '" + node.get("fieldName") + "' was updated. From "
+                                    + convert(node.get("value1")) + " to " + convert(node.get("value2"));
+                        }
+                        default -> {
+                            return null;
+                        }
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining("\n"));
+    }
 
     private static String convert(Object element) {
-        if (Objects.equals(element, null) || element.equals(true) || element.equals(false)
-                || element.toString().chars().allMatch(Character::isDigit)) {
-            return Objects.toString(element);
+        if (element instanceof String) {
+            return "'" + element + "'";
         }
-        if ((element.toString().startsWith("[") && element.toString().endsWith("]"))
-                || (element.toString().startsWith("{") && element.toString().endsWith("}"))) {
+        if (element instanceof Collection || element instanceof Map) {
             return "[complex value]";
         }
-        return "'" + element + "'";
+        return Objects.toString(element);
     }
+
 }

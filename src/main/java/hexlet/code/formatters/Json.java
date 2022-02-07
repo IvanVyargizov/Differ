@@ -11,26 +11,27 @@ import java.util.Objects;
 public class Json {
 
     public static String format(List<Map<String, Object>> diff) throws IOException {
-        Map<String, String> formatting = new LinkedHashMap<>();
-        diff.forEach(
-                (dict) -> {
-                    switch (dict.get("status").toString()) {
-                        case "ADDED" -> formatting.put("+ " + dict.get("fieldName"),
-                                Objects.toString(dict.get("value2")));
-                        case "REMOVED" -> formatting.put("- " + dict.get("fieldName"),
-                                Objects.toString(dict.get("value1")));
-                        case "CHANGED" -> {
-                            formatting.put("- " + dict.get("fieldName"), Objects.toString(dict.get("value1")));
-                            formatting.put("+ " + dict.get("fieldName"), Objects.toString(dict.get("value2")));
-                        }
-                        case "UNCHANGED" -> formatting.put(Objects.toString(dict.get("fieldName")),
-                                Objects.toString(dict.get("value1")));
-                        default -> { }
-                    }
-                }
-        );
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(formatting);
-    }
 
+        // я не совсем понял замечение, что можно сразу сериализовать при помощи ObjectMapper,
+        // без дополнительного форматирования.
+        // я не могу просто вернуть new ObjectMapper().writeValueAsString(diff)
+        // мне по заданию нужно реализовать вывод формата "+ chars2: false"
+        // поэтому перед передачей в ObjectMapper я провожу предварительное форматирование
+
+        Map<String, String> formatting = new LinkedHashMap<>();
+        for (Map<String, Object> node : diff) {
+            switch (node.get("status").toString()) {
+                case "ADDED" -> formatting.put("+ " + node.get("fieldName"), Objects.toString(node.get("value2")));
+                case "REMOVED" -> formatting.put("- " + node.get("fieldName"), Objects.toString(node.get("value1")));
+                case "CHANGED" -> {
+                    formatting.put("- " + node.get("fieldName"), Objects.toString(node.get("value1")));
+                    formatting.put("+ " + node.get("fieldName"), Objects.toString(node.get("value2")));
+                }
+                case "UNCHANGED" -> formatting.put(Objects.toString(node.get("fieldName")),
+                        Objects.toString(node.get("value1")));
+                default -> { }
+            }
+        }
+        return new ObjectMapper().writeValueAsString(formatting);
+    }
 }

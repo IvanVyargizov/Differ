@@ -9,7 +9,10 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,9 +51,9 @@ class AppTest {
     private final String filePath5 = Objects.requireNonNull(
             this.getClass().getClassLoader().getResource(FILE)).getPath();
 
-    private final String outputFormat1 = "stylish";
-    private final String outputFormat2 = "plain";
-    private final String outputFormat3 = "json";
+    private final String stylishFormat = "stylish";
+    private final String plainFormat = "plain";
+    private final String jsonFormat = "json";
 
     @BeforeEach
     void setUp() {
@@ -59,194 +62,101 @@ class AppTest {
 
     @Test
     @DisplayName("Test1. 'json' file comparison test. 'stylish' format default")
-    void test1() {
-        String expected = """
-                {
-                    chars1: [a, b, c]
-                  - chars2: [d, e, f]
-                  + chars2: false
-                  - checked: false
-                  + checked: true
-                  - default: null
-                  + default: [value1, value2]
-                  - id: 45
-                  + id: null
-                  - key1: value1
-                  + key2: value2
-                    numbers1: [1, 2, 3, 4]
-                  - numbers2: [2, 3, 4, 5]
-                  + numbers2: [22, 33, 44, 55]
-                  - numbers3: [3, 4, 5]
-                  + numbers4: [4, 5, 6]
-                  + obj1: {nestedKey=value, isNested=true}
-                  - setting1: Some value
-                  + setting1: Another value
-                  - setting2: 200
-                  + setting2: 300
-                  - setting3: true
-                  + setting3: none
-                }""";
+    void test1() throws IOException {
+        String expectedPath = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("Test1_Test2_expected")).getPath();
+        String expected = Files.lines(Path.of(expectedPath)).collect(Collectors.joining("\n")).trim();
         App.main(new String[] {filePathJson1, filePathJson2});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
     @DisplayName("Test2. 'yaml' file comparison test. 'stylish' format default")
-    void test2() {
-        String expected = """
-                {
-                    chars1: [a, b, c]
-                  - chars2: [d, e, f]
-                  + chars2: false
-                  - checked: false
-                  + checked: true
-                  - default: null
-                  + default: [value1, value2]
-                  - id: 45
-                  + id: null
-                  - key1: value1
-                  + key2: value2
-                    numbers1: [1, 2, 3, 4]
-                  - numbers2: [2, 3, 4, 5]
-                  + numbers2: [22, 33, 44, 55]
-                  - numbers3: [3, 4, 5]
-                  + numbers4: [4, 5, 6]
-                  + obj1: {nestedKey=value, isNested=true}
-                  - setting1: Some value
-                  + setting1: Another value
-                  - setting2: 200
-                  + setting2: 300
-                  - setting3: true
-                  + setting3: none
-                }""";
+    void test2() throws IOException {
+        String expectedPath = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("Test1_Test2_expected")).getPath();
+        String expected = Files.lines(Path.of(expectedPath)).collect(Collectors.joining("\n")).trim();
         App.main(new String[] {filePathYaml1, filePathYaml2});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
     @DisplayName("Test 3. 'json' file comparison test. 'plain' format explicitly indicated")
-    void test3() {
-        String expected = """
-                Property 'chars2' was updated. From [complex value] to false
-                Property 'checked' was updated. From false to true
-                Property 'default' was updated. From null to [complex value]
-                Property 'id' was updated. From 45 to null
-                Property 'key1' was removed
-                Property 'key2' was added with value: 'value2'
-                Property 'numbers2' was updated. From [complex value] to [complex value]
-                Property 'numbers3' was removed
-                Property 'numbers4' was added with value: [complex value]
-                Property 'obj1' was added with value: [complex value]
-                Property 'setting1' was updated. From 'Some value' to 'Another value'
-                Property 'setting2' was updated. From 200 to 300
-                Property 'setting3' was updated. From true to 'none'""";
-        App.main(new String[] {filePathJson1, filePathJson2, "-f", outputFormat2});
+    void test3() throws IOException {
+        String expectedPath = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("Test3_Test4_expected")).getPath();
+        String expected = Files.lines(Path.of(expectedPath)).collect(Collectors.joining("\n")).trim();
+        App.main(new String[] {filePathJson1, filePathJson2, "-f", plainFormat});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
     @DisplayName("Test 4. 'yaml' file comparison test. 'plain' format explicitly indicated")
-    void test4() {
-        String expected = """
-                Property 'chars2' was updated. From [complex value] to false
-                Property 'checked' was updated. From false to true
-                Property 'default' was updated. From null to [complex value]
-                Property 'id' was updated. From 45 to null
-                Property 'key1' was removed
-                Property 'key2' was added with value: 'value2'
-                Property 'numbers2' was updated. From [complex value] to [complex value]
-                Property 'numbers3' was removed
-                Property 'numbers4' was added with value: [complex value]
-                Property 'obj1' was added with value: [complex value]
-                Property 'setting1' was updated. From 'Some value' to 'Another value'
-                Property 'setting2' was updated. From 200 to 300
-                Property 'setting3' was updated. From true to 'none'""";
-        App.main(new String[] {filePathYaml1, filePathYaml2, "-f", outputFormat2});
+    void test4() throws IOException {
+        String expectedPath = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("Test3_Test4_expected")).getPath();
+        String expected = Files.lines(Path.of(expectedPath)).collect(Collectors.joining("\n")).trim();
+        App.main(new String[] {filePathYaml1, filePathYaml2, "-f", plainFormat});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
     @DisplayName("Test 5. 'json' file comparison test. 'stylish' format explicitly indicated")
-    void test5() {
-        String expected = """
-                {
-                    follow: true
-                    host: hexlet.io.ru
-                    proxy: 123.234.53.11
-                    timeout: 10
-                }""";
-        App.main(new String[] {filePathJson3, filePathJson3, "-f", outputFormat1});
+    void test5() throws IOException {
+        String expectedPath = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("Test5_expected")).getPath();
+        String expected = Files.lines(Path.of(expectedPath)).collect(Collectors.joining("\n")).trim();
+        App.main(new String[] {filePathJson3, filePathJson3, "-f", stylishFormat});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
     @DisplayName("Test 6. 'yaml' file comparison test. 'stylish' format explicitly indicated")
-    void test6() {
-        String expected = """
-                {
-                  - follow: true
-                  - host: hexlet.io.ru
-                  - proxy: 123.234.53.11
-                  - timeout: 10
-                }""";
-        App.main(new String[] {filePathYaml3, filePathYaml4, "-f", outputFormat1});
+    void test6() throws IOException {
+        String expectedPath = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("Test6_expected")).getPath();
+        String expected = Files.lines(Path.of(expectedPath)).collect(Collectors.joining("\n")).trim();
+        App.main(new String[] {filePathYaml3, filePathYaml4, "-f", stylishFormat});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
     @DisplayName("Test 7. 'yaml' file comparison test. 'plain' format explicitly indicated")
-    void test7() {
-        String expected = """
-                Property 'follow' was removed
-                Property 'host' was removed
-                Property 'proxy' was removed
-                Property 'timeout' was removed""";
-        App.main(new String[] {filePathYaml3, filePathYaml4, "-f", outputFormat2});
+    void test7() throws IOException {
+        String expectedPath = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("Test7_expected")).getPath();
+        String expected = Files.lines(Path.of(expectedPath)).collect(Collectors.joining("\n")).trim();
+        App.main(new String[] {filePathYaml3, filePathYaml4, "-f", plainFormat});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
     @DisplayName("Test 8. 'json' file comparison test. 'stylish' format default")
-    void test8() {
-        String expected = """
-                {
-                  + follow: true
-                  + host: hexlet.io.ru
-                  + proxy: 123.234.53.11
-                  + timeout: 10
-                }""";
+    void test8() throws IOException {
+        String expectedPath = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("Test8_expected")).getPath();
+        String expected = Files.lines(Path.of(expectedPath)).collect(Collectors.joining("\n")).trim();
         App.main(new String[] {filePathJson4, filePathJson3});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
     @DisplayName("Test 9. 'json' file comparison test. 'plain' format explicitly indicated")
-    void test9() {
-        String expected = """
-                Property 'follow' was added with value: true
-                Property 'host' was added with value: 'hexlet.io.ru'
-                Property 'proxy' was added with value: '123.234.53.11'
-                Property 'timeout' was added with value: 10""";
-        App.main(new String[] {filePathJson4, filePathJson3, "-f", outputFormat2});
+    void test9() throws IOException {
+        String expectedPath = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("Test9_expected")).getPath();
+        String expected = Files.lines(Path.of(expectedPath)).collect(Collectors.joining("\n")).trim();
+        App.main(new String[] {filePathJson4, filePathJson3, "-f", plainFormat});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
     @Test
     @DisplayName("Test 10. 'json' file comparison test. 'json' format explicitly indicated")
-    void test10() {
-        String expected = """
-                {"chars1":"[a, b, c]","- chars2":"[d, e, f]","+ chars2":"false","- checked":"false","""
-                + """
-                "+ checked":"true","- default":"null","+ default":"[value1, value2]","- id":"45","+ id":"null","""
-                + """
-                "- key1":"value1","+ key2":"value2","numbers1":"[1, 2, 3, 4]","- numbers2":"[2, 3, 4, 5]","""
-                + """
-                "+ numbers2":"[22, 33, 44, 55]","- numbers3":"[3, 4, 5]","+ numbers4":"[4, 5, 6]","""
-                + """
-                "+ obj1":"{nestedKey=value, isNested=true}","- setting1":"Some value","+ setting1":"Another value","""
-                + """
-                "- setting2":"200","+ setting2":"300","- setting3":"true","+ setting3":"none"}""";
-        App.main(new String[] {filePathJson1, filePathJson2, "-f", outputFormat3});
+    void test10() throws IOException {
+        String expectedPath = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("Test10_expected")).getPath();
+        String expected = Files.readString(Path.of(expectedPath)).trim();
+        App.main(new String[] {filePathJson1, filePathJson2, "-f", jsonFormat});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 
@@ -255,7 +165,7 @@ class AppTest {
     void test11() {
         String expected = """
                 {"- follow":"true","- host":"hexlet.io.ru","- proxy":"123.234.53.11","- timeout":"10"}""";
-        App.main(new String[] {filePathYaml3, filePathYaml4, "-f", outputFormat3});
+        App.main(new String[] {filePathYaml3, filePathYaml4, "-f", jsonFormat});
         assertThat(output.toString().trim()).isEqualTo(expected);
     }
 

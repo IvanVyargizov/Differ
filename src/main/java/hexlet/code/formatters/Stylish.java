@@ -1,28 +1,37 @@
 package hexlet.code.formatters;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Stylish {
 
     public static String format(List<Map<String, Object>> diff) {
-        LinkedList<String> formatting = new LinkedList<>();
-        diff.forEach(
-                (dict) -> {
-                    switch (dict.get("status").toString()) {
-                        case "ADDED" -> formatting.add("  + " + dict.get("fieldName") + ": " + dict.get("value2"));
-                        case "REMOVED" -> formatting.add("  - " + dict.get("fieldName") + ": " + dict.get("value1"));
-                        case "CHANGED" -> {
-                            formatting.add("  - " + dict.get("fieldName") + ": " + dict.get("value1"));
-                            formatting.add("  + " + dict.get("fieldName") + ": " + dict.get("value2"));
-                        }
-                        case "UNCHANGED" -> formatting.add("    " + dict.get("fieldName") + ": " + dict.get("value1"));
-                        default -> { }
+
+        return diff.stream()
+            .map((node) -> {
+                switch (node.get("status").toString()) {
+                    case "ADDED" -> {
+                        return "  + " + node.get("fieldName") + ": " + node.get("value2");
+                    }
+                    case "REMOVED" -> {
+                        return "  - " + node.get("fieldName") + ": " + node.get("value1");
+                    }
+                    case "CHANGED" -> {
+                        return "  - " + node.get("fieldName") + ": " + node.get("value1") + "\n"
+                                + "  + " + node.get("fieldName") + ": " + node.get("value2");
+                    }
+                    case "UNCHANGED" -> {
+                        return "    " + node.get("fieldName") + ": " + node.get("value1");
+                    }
+                    default -> {
+                        return null;
                     }
                 }
-        );
-        return "{\n" + String.join("\n", formatting) + "\n}";
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.joining("\n", "{\n", "\n}"));
     }
 
 }
